@@ -68,12 +68,16 @@ jobs:
     
   report: 
     needs: [test, package]
-    timeout-minutes: 10
+    timeout-minutes: 5
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "test:    ${{ needs.test.result }}"
-          echo "package: ${{ needs.package.result }}"
+      - name: Write job summary
+        run: |
+          {
+            echo "| App | Version | Commit | Event | Test | Package |"
+            echo "|---|---|---|---|---|---|"
+            echo "| temperature | ${{ needs.package.outputs.version || 'n/a' }} | ${GITHUB_SHA::7} | ${{ github.event_name }} | ${{ needs.test.result }} | ${{ needs.package.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   
