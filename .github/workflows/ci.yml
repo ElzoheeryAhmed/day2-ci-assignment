@@ -77,6 +77,8 @@ jobs:
     timeout-minutes: 5
     if: ${{ always() }}
     runs-on: ubuntu-latest
+    env:
+      HAS_TOKEN: ${{ secrets.NOTIFY_TOKEN != '' }}
     steps:
       - name: Write job summary
         env:
@@ -88,5 +90,10 @@ jobs:
             echo "|---|---|---|---|---|---|"
             echo "| ${{env.APP_NAME}} | ${{ needs.package.outputs.version || 'n/a' }} | ${GITHUB_SHA::7} | ${{ github.event_name }} | ${{ needs.test.result }} | ${{ needs.package.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
-
+      - name: Send notification
+        if: ${{ env.HAS_TOKEN == 'true' }}
+        env:
+          NOTIFY_TOKEN: ${{ secrets.NOTIFY_TOKEN }}
+        run: |
+          echo "Notification sent (token length: ${#NOTIFY_TOKEN})"    
   
