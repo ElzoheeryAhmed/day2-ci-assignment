@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # no checkout here: we only use what the package job produced
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: app-package
       - run: |
