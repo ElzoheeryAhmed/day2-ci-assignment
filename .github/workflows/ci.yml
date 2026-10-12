@@ -1,6 +1,9 @@
 name: Day 2 CI
 run-name: ${{ github.actor }}
 
+env:
+  APP_NAME: temperature
+
 on:
   workflow_dispatch:
     inputs:
@@ -38,7 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: tar -czf app.tar.gz temperature.py
+      - id: version
+        run: echo "version=0.1.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+      - run: tar -czf app-${{ steps.version.outputs.version }}.tar.gz temperature.py
       - uses: actions/upload-artifact@v4
         with:
           name: app-package
