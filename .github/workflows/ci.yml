@@ -1,6 +1,9 @@
 name: Day 2 CI
 run-name: ${{ github.actor }}
 
+permissions:
+  contents: read
+
 env:
   APP_NAME: temperature
   Branch: ${{github.ref_name}}
