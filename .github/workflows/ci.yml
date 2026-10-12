@@ -47,7 +47,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: app-package
-          path: app.tar.gz
+          path: app-${{ steps.version.outputs.version }}.tar.gz
     
   verify:
     needs: package
