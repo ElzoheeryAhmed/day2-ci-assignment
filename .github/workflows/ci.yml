@@ -17,6 +17,7 @@ on:
     - cron: "0 7 * * 1"   # Every Monday at 07:00 UTC
 jobs:
   test:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
      - uses: actions/checkout@v4
@@ -26,9 +27,13 @@ jobs:
         python-version: ${{ inputs.python-version }}
      - run: pip install -r requirements-dev.txt
      - run: pytest  
-  
+     - name: Announce failure
+       if: ${{ failure() }}
+       run: echo "Tests failed on ${{ github.ref_name }}"
+
   package:
     needs: test
+    timeout-minutes: 10
     if: ${{ inputs.create-package }}
     runs-on: ubuntu-latest
     steps:
@@ -41,6 +46,7 @@ jobs:
     
   verify:
     needs: package
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       # no checkout here: we only use what the package job produced
@@ -55,6 +61,7 @@ jobs:
     
   report: 
     needs: [test, package]
+    timeout-minutes: 10
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
