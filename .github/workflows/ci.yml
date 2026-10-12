@@ -79,8 +79,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Write job summary
+        env:
+          REPORT_TITLE: ${{ vars.REPORT_TITLE || 'CI Report' }}
         run: |
           {
+            echo "## $REPORT_TITLE"
             echo "| App | Version | Commit | Event | Test | Package |"
             echo "|---|---|---|---|---|---|"
             echo "| ${{env.APP_NAME}} | ${{ needs.package.outputs.version || 'n/a' }} | ${GITHUB_SHA::7} | ${{ github.event_name }} | ${{ needs.test.result }} | ${{ needs.package.result }} |"
