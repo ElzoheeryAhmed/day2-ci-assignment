@@ -36,6 +36,8 @@ jobs:
 
   package:
     needs: test
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     timeout-minutes: 10
     if: ${{ inputs.create-package }}
     runs-on: ubuntu-latest
@@ -60,7 +62,7 @@ jobs:
           name: app-package
       - run: |
           mkdir out
-          tar -xzf app.tar.gz -C out
+          tar -xzf app-${{needs.package.outputs.version}}.tar.gz -C out
           cd out
           python3 -c "import temperature; print('package OK')"
     
