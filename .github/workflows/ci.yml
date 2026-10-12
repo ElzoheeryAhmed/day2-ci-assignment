@@ -43,7 +43,7 @@ jobs:
      - name: SonarQube Scan
        env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
-       uses: SonarSource/sonarqube-scan-action@v6
+       uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9
          
 
   package:
