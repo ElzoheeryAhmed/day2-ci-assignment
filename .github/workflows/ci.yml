@@ -3,6 +3,8 @@ run-name: ${{ github.actor }}
 
 env:
   APP_NAME: temperature
+  Branch: ${{github.ref_name}}
+  RunNumber: ${{ github.run_number }}
 
 on:
   workflow_dispatch:
@@ -22,17 +24,18 @@ jobs:
   test:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    env:
+      pythonVersion: ${{ inputs.python-version }}
     steps:
-     - uses: actions/checkout@v4
      - uses: actions/checkout@v4
      - uses: actions/setup-python@v5
        with:
-        python-version: ${{ inputs.python-version }}
+        python-version: ${{env.pythonVersion}}
      - run: pip install -r requirements-dev.txt
      - run: pytest  
      - name: Announce failure
        if: ${{ failure() }}
-       run: echo "Tests failed on ${{ github.ref_name }}"
+       run: echo "Tests failed on $Branch"
 
   package:
     needs: test
@@ -44,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: version
-        run: echo "version=0.1.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+        run: echo "version=0.1.${{env.RunNumber}}" >> "$GITHUB_OUTPUT"
       - run: tar -czf app-${{ steps.version.outputs.version }}.tar.gz temperature.py
       - uses: actions/upload-artifact@v4
         with:
@@ -77,7 +80,7 @@ jobs:
           {
             echo "| App | Version | Commit | Event | Test | Package |"
             echo "|---|---|---|---|---|---|"
-            echo "| temperature | ${{ needs.package.outputs.version || 'n/a' }} | ${GITHUB_SHA::7} | ${{ github.event_name }} | ${{ needs.test.result }} | ${{ needs.package.result }} |"
+            echo "| ${{env.APP_NAME}} | ${{ needs.package.outputs.version || 'n/a' }} | ${GITHUB_SHA::7} | ${{ github.event_name }} | ${{ needs.test.result }} | ${{ needs.package.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
   
