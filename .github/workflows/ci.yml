@@ -1,0 +1,65 @@
+name: Day 2 CI
+run-name: ${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      python-version:
+        description: "which python version to use"
+        type: choice
+        options: ["3.12", "3.13"]
+        default: "3.13"
+      create-package:
+        description: "create the package"
+        type: boolean
+        default: true
+  schedule:
+    - cron: "0 7 * * 1"   # Every Monday at 07:00 UTC
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v4
+     - uses: actions/checkout@v4
+     - uses: actions/setup-python@v5
+       with:
+        python-version: ${{ inputs.python-version }}
+     - run: pip install -r requirements-dev.txt
+     - run: pytest  
+  
+  package:
+    needs: test
+    if: ${{ inputs.create-package }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: tar -czf app.tar.gz temperature.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-package
+          path: app.tar.gz
+    
+  verify:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      # no checkout here: we only use what the package job produced
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-package
+      - run: |
+          mkdir out
+          tar -xzf app.tar.gz -C out
+          cd out
+          python3 -c "import temperature; print('package OK')"
+    
+  report: 
+    needs: [test, package]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "test:    ${{ needs.test.result }}"
+          echo "package: ${{ needs.package.result }}"
+
+  
