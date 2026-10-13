@@ -32,7 +32,7 @@ jobs:
       pythonVersion: ${{ inputs.python-version }}
     steps:
      - uses: actions/checkout@v4
-     - uses: actions/setup-python@v5
+     - uses: actions/setup-python@v7
        with:
         python-version: ${{env.pythonVersion}}
         cache: pip
