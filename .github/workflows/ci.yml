@@ -60,7 +60,7 @@ jobs:
       - id: version
         run: echo "version=0.1.${{env.RunNumber}}" >> "$GITHUB_OUTPUT"
       - run: tar -czf app-${{ steps.version.outputs.version }}.tar.gz temperature.py
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: app-package
           path: app-${{ steps.version.outputs.version }}.tar.gz
