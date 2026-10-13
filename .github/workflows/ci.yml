@@ -31,7 +31,7 @@ jobs:
     env:
       pythonVersion: ${{ inputs.python-version }}
     steps:
-     - uses: actions/checkout@v4
+     - uses: actions/checkout@v7
      - uses: actions/setup-python@v5
        with:
         python-version: ${{env.pythonVersion}}
@@ -56,7 +56,7 @@ jobs:
     if: ${{ inputs.create-package }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: version
         run: echo "version=0.1.${{env.RunNumber}}" >> "$GITHUB_OUTPUT"
       - run: tar -czf app-${{ steps.version.outputs.version }}.tar.gz temperature.py
